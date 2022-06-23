@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:shop_app/modules/shop_app/login/shop_login_screen.dart';
 import 'package:shop_app/shared/components/components.dart';
+import 'package:shop_app/shared/network/local/cache_helper.dart';
 import 'package:shop_app/shared/styles/colors.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -16,8 +17,7 @@ class BoardingModel{
     required this.body,
 });
 }
- var boardController = PageController();
- bool isLast = false;
+
 
 class OnBoardingScreen extends StatefulWidget {
 
@@ -26,6 +26,8 @@ class OnBoardingScreen extends StatefulWidget {
 }
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
+  var boardController = PageController();
+  bool isLast = false;
   List<BoardingModel> boarding =
   [
     BoardingModel(
@@ -44,15 +46,28 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       body: 'on Board 3 body',
     ),
   ];
+  void submit()
+  {
+    CacheHelper.saveData(
+        key: 'onBoarding',
+        value: true,
+    ).then((value) {
+      if(value!)
+      {
+        navigateAndFinish(
+          context,
+          ShopLoginScreen(),
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return  Scaffold(
       appBar: AppBar(
-        actions: [
-          TextButton(onPressed: ()
-          {
-            navigateAndFinish(context, const ShopLoginScreen(),);
-          },
+        actions:  [
+          TextButton(onPressed: submit,
           child: const Text('SKIP'),
           ),
         ],
@@ -107,7 +122,7 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                     {
                       if(isLast)
                         {
-                          navigateAndFinish(context, const ShopLoginScreen(),);
+                          submit();
                         }else
                           {
                             boardController.nextPage(
@@ -127,13 +142,12 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
       ),
     );
   }
-
   Widget buildBoardingItem(BoardingModel model) => Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Expanded(
         child: Image(
-            image: AssetImage('${model.image}'),
+          image: AssetImage('${model.image}'),
         ),
       ),
       const SizedBox(

@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 
 Widget defaultFormField({
@@ -16,15 +17,17 @@ Widget defaultFormField({
    keyboardType: type,
    onFieldSubmitted: (value)
    {
-     onSubmit;
+     onSubmit!(value);
    },
    onChanged: (value)
    {
-     onChange;
+     onChange!(value);
    },
   validator: (value)
   {
-    validate;
+    validate(value);
+    return null;
+
   },
   decoration: InputDecoration(
   prefixIcon: Icon(prefix,),
@@ -34,10 +37,6 @@ Widget defaultFormField({
  ),
  );
 
-
-
-
-
 Widget myDivider() =>  Padding(
   padding: const EdgeInsetsDirectional.only(
     start: 20.0,
@@ -46,8 +45,6 @@ Widget myDivider() =>  Padding(
     width: double.infinity,
     height: 1.0,
     color: Colors.grey[200],
-
-
   ),
 );
 
@@ -64,3 +61,35 @@ void navigateAndFinish(context, widget) =>
     Navigator.pushAndRemoveUntil(
         context, MaterialPageRoute(builder: (context) => widget),
             (route) => false);
+
+ void showToast({
+  required String text,
+  required ToastState state,
+  })=>    Fluttertoast.showToast(
+  msg: text,
+  toastLength: Toast.LENGTH_SHORT,
+  gravity: ToastGravity.BOTTOM,
+  timeInSecForIosWeb: 5,
+  backgroundColor: chooseToastColor(state),
+  textColor: Colors.white,
+  fontSize: 16.0);
+
+ // ignore: constant_identifier_names
+ enum ToastState{SUCCESS,ERROR,WARNING}
+ Color chooseToastColor(ToastState state)
+ {
+   Color? color;
+   switch(state)
+       {
+     case ToastState.SUCCESS:
+       color = Colors.green;
+       break;
+     case ToastState.ERROR:
+       color = Colors.red;
+       break;
+     case ToastState.WARNING:
+       color = Colors.amber;
+       break;
+   }
+   return color;
+ }
